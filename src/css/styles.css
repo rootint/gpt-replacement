@@ -1,0 +1,28 @@
+:root {
+	--primary: #7D83FF;
+	--secondary: #54ade4;
+	--font-family: 'Inter';
+	--text: #f1f1f1;
+  --text-2: #e1e1e1;
+	--bg: #000;
+	--placeholder-text: #777;
+	--bg-elevation-1: #090909;
+  --border: #181818;
+}
+
+* {
+	font-family: 'Inter', sans-serif;
+	color: var(--text);
+	box-sizing: border-box;
+	line-height: 140%;
+}
+
+code {
+  font-family: 'Roboto Mono', monospace;
+}
+
+body {
+	background: var(--bg);
+	margin: 0;
+	padding: 0;
+}
