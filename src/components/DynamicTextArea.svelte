@@ -1,24 +1,13 @@
 <script>
+	import { onMount, onDestroy } from 'svelte';
 	import { chatStore } from '../stores/chatStore';
-	import { Send } from 'lucide-svelte';
+	import { ArrowUp } from 'lucide-svelte';
 
 	let message = '';
 	let isActive = false;
+	let isButtonActive = false;
 	let textareaHeight = 46;
-
-	// // Adjust the height of textarea based on the number of lines and limit
-	// function adjustHeight() {
-	// 	let numberOfLines = (messageToSend.match(/\n/g) || []).length + 1; // Count the number of lines
-	// 	let newHeight = numberOfLines * lineHeight;
-
-	// 	if (newHeight > maxTextAreaHeight) {
-	// 		textArea.style.height = `${maxTextAreaHeight}px`;
-	// 		textArea.style.overflowY = 'auto'; // Enable scrolling after reaching max height
-	// 	} else {
-	// 		textArea.style.height = `${newHeight}px`;
-	// 		textArea.style.overflowY = 'hidden'; // Hide scroll bar until max height is reached
-	// 	}
-	// }
+	let inputElement;
 
 	function handleFocus() {
 		isActive = true;
@@ -29,14 +18,16 @@
 	}
 
 	async function handleMessageSend() {
-		await chatStore.handleSendMessage(message, 'user');
+		if (!message.trim()) return;
+		let messageCopy = message;
 		message = '';
+		isButtonActive = false;
+		await chatStore.handleSendMessage(messageCopy, 'user');
 	}
 
 	function handleInput(event) {
+		isButtonActive = message.trim();
 		message = event.target.value;
-		// console.log((event.target.scrollHeight) / );
-		// textareaHeight = event.target.scrollHeight;
 		let amountOfLines = Math.round((event.target.scrollHeight + 2 - 24) / 20);
 		console.log('amount of lines', Math.round((event.target.scrollHeight + 2 - 24) / 20));
 		textareaHeight = 20 * (amountOfLines > 10 ? 10 : amountOfLines) + 24 + 2;
@@ -44,37 +35,79 @@
 		console.log('offsetHeight', event.target.offsetHeight);
 		console.log('textareaHeight', textareaHeight);
 	}
+
+	function handleKeydown(event) {
+		// Check for Enter without Shift
+		if (event.key === 'Enter' && !event.shiftKey) {
+			event.preventDefault(); // Prevents the default action of inserting a new line
+			handleMessageSend();
+		}
+		// For Shift+Enter, just allow the default behavior which is to insert new line
+	}
+
+	function focusInput() {
+		inputElement.focus();
+	}
+
+	function handleSlashPress(event) {
+		if (event.key === '/' && !isActive) {
+			event.preventDefault(); // Prevent any default action associated with the "/" key
+			focusInput();
+		}
+	}
+
+	// onMount(() => {
+	// 	window.addEventListener('keydown', handleKeyPress);
+	// });
+
+	// // Cleanup
+	// onDestroy(() => {
+	// 	window.removeEventListener('keydown', handleKeyPress);
+	// });
 </script>
+
+<svelte:window on:keydown={handleSlashPress} />
 
 <div class="textarea-row">
 	<textarea
+		bind:this={inputElement}
 		on:focus={handleFocus}
 		on:blur={handleBlur}
 		bind:value={message}
 		on:input={handleInput}
+		on:keydown={handleKeydown}
 		style="height: {textareaHeight}px;"
 		class:active={isActive}
 		placeholder="Type your message..."
 	></textarea>
-	<button on:click={handleMessageSend}><Send color="#111" size="20" /></button>
+	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}
+		><ArrowUp color="#000" size="20" /></button
+	>
 </div>
 
 <style>
+	.buttonactive {
+		pointer-events: auto;
+		cursor: pointer;
+		background-color: var(--text-2);
+	}
 	button {
-		/* display: flex;
-		align-items: center;
-		justify-content: center; */
-		padding: 10px 13px;
-		background-color: var(--primary);
-		/* margin-left: 12px; */
-		border-radius: 8px;
+		padding: 13px;
+		background-color: var(--bg-elevation-3);
+		border-radius: 12px;
 		border: none;
 		margin-left: 12px;
 		line-height: 0;
+		pointer-events: none;
+		cursor: default;
 	}
 	.textarea-row {
+		width: 100%;
 		display: flex;
 		margin-bottom: 24px;
+		max-width: 768px;
+		margin-right: 16px;
+		align-items: end;
 	}
 	textarea {
 		width: 100%;
@@ -83,7 +116,7 @@
 		color: var(--text);
 		background-color: var(--bg-elevation-1);
 		border: var(--border) solid 1px;
-		border-radius: 8px;
+		border-radius: 12px;
 		font-size: 14px;
 		transition: border-color 0.2s ease;
 		outline: none;
@@ -92,7 +125,7 @@
 		scrollbar-color: var(--border) var(--bg-elevation-1);
 	}
 	.active {
-		border-color: var(--text-2);
+		border-color: var(--placeholder-text);
 	}
 
 	textarea::placeholder {

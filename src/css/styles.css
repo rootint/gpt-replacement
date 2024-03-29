@@ -1,13 +1,15 @@
 :root {
-	--primary: #7D83FF;
+	--primary: #7d83ff;
 	--secondary: #54ade4;
 	--font-family: 'Inter';
 	--text: #f1f1f1;
-  --text-2: #e1e1e1;
+	--text-2: #e1e1e1;
 	--bg: #000;
 	--placeholder-text: #777;
 	--bg-elevation-1: #090909;
-  --border: #181818;
+	--bg-elevation-2: #0e0e0e;
+	--bg-elevation-3: #131313;
+	--border: #181818;
 }
 
 * {
@@ -15,10 +17,13 @@
 	color: var(--text);
 	box-sizing: border-box;
 	line-height: 140%;
+  /* scroll-behavior: ; */
+	scrollbar-color: var(--bg-elevation-3) var(--bg);
+  scrollbar-width: 16px;
 }
 
 code {
-  font-family: 'Roboto Mono', monospace;
+	font-family: 'Roboto Mono', monospace;
 }
 
 body {
