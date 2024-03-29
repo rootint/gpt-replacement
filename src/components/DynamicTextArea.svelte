@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { chatStore } from '../stores/chatStore';
 	import { ArrowUp } from 'lucide-svelte';
+	import LoadingSpinner from './LoadingSpinner.svelte';
 
 	let message = '';
 	let isActive = false;
@@ -19,11 +20,11 @@
 	}
 
 	async function handleMessageSend() {
-		console.log(responsePending);
 		if (!message.trim() || responsePending) return;
 		let messageCopy = message;
 		message = '';
 		isButtonActive = false;
+		textareaHeight = 46;
 		await chatStore.handleSendMessage(messageCopy, 'user');
 	}
 
@@ -57,7 +58,7 @@
 			focusInput();
 		}
 	}
-
+    
 	onMount(() => {
 		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
 			responsePending = value;
@@ -67,11 +68,6 @@
 			unsubscribe(); // Cleanup on component unmount
 		};
 	});
-
-	// // Cleanup
-	// onDestroy(() => {
-	// 	window.removeEventListener('keydown', handleKeyPress);
-	// });
 </script>
 
 <svelte:window on:keydown={handleSlashPress} />
@@ -88,9 +84,13 @@
 		class:active={isActive}
 		placeholder="Type your message..."
 	></textarea>
-	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}
-		><ArrowUp color="#000" size="20" /></button
-	>
+	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}>
+		{#if responsePending}
+			<LoadingSpinner />
+		{:else}
+			<ArrowUp color="#000" size="20" />
+		{/if}
+	</button>
 </div>
 
 <style>
@@ -108,6 +108,9 @@
 		line-height: 0;
 		pointer-events: none;
 		cursor: default;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 	.textarea-row {
 		width: 100%;
