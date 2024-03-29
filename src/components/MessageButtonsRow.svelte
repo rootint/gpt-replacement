@@ -20,7 +20,7 @@
 </script>
 
 <div class="buttons-row">
-	<div class="text-button" on:click={() => handleCopyButton(message)}>
+	<button class="text-button" on:click={() => handleCopyButton(message)}>
 		{#if isCopyButtonClicked}
 			<Check color="#777" size="16" />
 			<p class="text-button-label">Copied!</p>
@@ -28,12 +28,12 @@
 			<Copy color="#777" size="16" />
 			<p class="text-button-label">Copy</p>
 		{/if}
-	</div>
+	</button>
 	{#if isLast}
-		<div class="text-button" on:click={handleRegenButton}>
+		<button class="text-button" on:click={handleRegenButton}>
 			<RotateCcw color="#777" size="16" />
 			<p class="text-button-label">Regenerate</p>
-		</div>
+		</button>
 	{/if}
 </div>
 
@@ -56,10 +56,15 @@
 	}
 
 	.text-button {
+		margin: 0;
+		padding: 0;
 		margin-right: 16px;
 		display: flex;
-		cursor: pointer;
+		border: none;
+		outline: none;
+		background-color: transparent;
 		color: var(--placeholder-text);
+		cursor: pointer;
 		/* color: var(--placeholder-text); */
 	}
 </style>

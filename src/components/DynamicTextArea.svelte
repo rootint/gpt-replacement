@@ -8,6 +8,7 @@
 	let isButtonActive = false;
 	let textareaHeight = 46;
 	let inputElement;
+	let responsePending;
 
 	function handleFocus() {
 		isActive = true;
@@ -18,7 +19,8 @@
 	}
 
 	async function handleMessageSend() {
-		if (!message.trim()) return;
+		console.log(responsePending);
+		if (!message.trim() || responsePending) return;
 		let messageCopy = message;
 		message = '';
 		isButtonActive = false;
@@ -56,9 +58,15 @@
 		}
 	}
 
-	// onMount(() => {
-	// 	window.addEventListener('keydown', handleKeyPress);
-	// });
+	onMount(() => {
+		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
+			responsePending = value;
+		});
+
+		return () => {
+			unsubscribe(); // Cleanup on component unmount
+		};
+	});
 
 	// // Cleanup
 	// onDestroy(() => {

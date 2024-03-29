@@ -4,6 +4,7 @@ import { createChat, listChats, sendMessage, getMessages } from '../services/api
 function createChatStore() {
 	const messages = writable([]);
 	const chatId = writable('aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a');
+	const awaitingForResponse = writable(false);
 
 	async function fetchChatMessages(id) {
 		const fetchedMessages = await getMessages(id);
@@ -11,6 +12,9 @@ function createChatStore() {
 	}
 
 	async function handleSendMessage(messageToSend, sender) {
+		awaitingForResponse.update((_) => {
+			return true;
+		});
 		messages.update((currentMessages) => {
 			// Return a new array with the new message appended
 			return [...currentMessages, { sender: 'user', text: messageToSend }];
@@ -25,12 +29,16 @@ function createChatStore() {
 			// Return a new array with the new message appended
 			return [...currentMessages, { sender: 'assistant', text: newMessage.response }];
 		});
+		awaitingForResponse.update((_) => {
+			return false;
+		});
 		// await fetchChatMessages('46d58954-e7a2-48f5-8266-85a2655561fe'); // Refresh messages after sending
 	}
 
 	return {
 		messages,
 		chatId,
+		awaitingForResponse,
 		fetchChatMessages, // Expose this function
 		handleSendMessage
 	};

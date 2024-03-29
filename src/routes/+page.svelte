@@ -17,7 +17,7 @@
 
 	onMount(async () => {
 		await chatStore.fetchChatMessages(chatId);
-		const unsubscribe = chatStore.messages.subscribe(async (value) => {
+		const unsubscribe = chatStore.messages.subscribe((value) => {
 			messageList = value;
 		});
 
@@ -48,12 +48,12 @@
 			{#each messageList as message}
 				<div class="message">
 					<h4>{message.sender == 'user' ? 'You' : 'ChatGPT'}</h4>
-					<p>{message.text}</p>
+					<!-- <p>{message.text}</p> -->
+					<SvelteMarkdown source={message.text}></SvelteMarkdown>
 					{#if message.sender == 'assistant'}
 						<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
 						></MessageButtonsRow>
 					{/if}
-					<!-- <SvelteMarkdown source={message.text}></SvelteMarkdown> -->
 				</div>
 			{/each}
 		</div>
