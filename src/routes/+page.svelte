@@ -3,26 +3,19 @@
 	import SvelteMarkdown from 'svelte-markdown';
 	import { tick, onMount, afterUpdate } from 'svelte';
 	import DynamicTextArea from '../components/DynamicTextArea.svelte';
+	import MessageButtonsRow from '../components/MessageButtonsRow.svelte';
 
 	let chats = [];
 	let chatId = 'aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a'; // Removed default chatId for selection purpose
 	let messageList = [];
 	let messagesView;
 
-	function scrollToBottom() {
-		if (messagesView) {
-			console.log('scrollTop', messagesView.scrollTop);
-			console.log('scrollHeight', messagesView.scrollHeight);
-			messagesView.scrollTop = messagesView.scrollHeight;
-			console.log('scrollTop', messagesView.scrollTop);
-            console.log('scrollHeight', messagesView.scrollHeight);
-		}
-	}
-
-	afterUpdate(scrollToBottom);
+	const scrollToBottom = async (node) => {
+		console.log('scrolling', node);
+		node.scroll({ top: node.scrollHeight });
+	};
 
 	onMount(async () => {
-		scrollToBottom();
 		await chatStore.fetchChatMessages(chatId);
 		const unsubscribe = chatStore.messages.subscribe(async (value) => {
 			messageList = value;
@@ -30,7 +23,7 @@
 
 		console.log(messageList);
 		await tick();
-		scrollToBottom();
+		scrollToBottom(messagesView);
 		return () => {
 			unsubscribe(); // Cleanup on component unmount
 		};
@@ -49,13 +42,18 @@
 </svelte:head>
 
 <main>
-	<div class="chat-view" bind:this={messagesView}>
-		<div class="messages-view">
+	<div class="gradient-mask"></div>
+	<div class="chat-view">
+		<div class="messages-view" bind:this={messagesView}>
 			{#each messageList as message}
 				<div class="message">
 					<h4>{message.sender == 'user' ? 'You' : 'ChatGPT'}</h4>
-					<!-- <p>{message.text}</p> -->
-					<SvelteMarkdown source={message.text}></SvelteMarkdown>
+					<p>{message.text}</p>
+					{#if message.sender == 'assistant'}
+						<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
+						></MessageButtonsRow>
+					{/if}
+					<!-- <SvelteMarkdown source={message.text}></SvelteMarkdown> -->
 				</div>
 			{/each}
 		</div>
@@ -66,6 +64,15 @@
 </main>
 
 <style>
+	.gradient-mask {
+		z-index: 2;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50px;
+		background-image: linear-gradient(rgba(0, 0, 0, 255), rgba(0, 0, 0, 0));
+	}
 	p {
 		margin: 0;
 		padding: 0;
@@ -100,6 +107,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		padding-top: 24px;
+		padding-bottom: 8px;
 	}
 	.chat-view {
 		width: 100vw;

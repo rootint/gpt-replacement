@@ -106,7 +106,7 @@
 		display: flex;
 		margin-bottom: 24px;
 		max-width: 768px;
-		margin-right: 16px;
+		margin-right: 18px;
 		align-items: end;
 	}
 	textarea {
