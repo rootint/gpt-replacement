@@ -85,13 +85,13 @@
 		on:keydown={handleKeydown}
 		style="height: {textareaHeight}px;"
 		class:active={isActive}
-		placeholder="Type your message..."
+		placeholder="Message ChatGPT 4..."
 	></textarea>
 	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}>
 		{#if responsePending}
 			<LoadingSpinner />
 		{:else}
-			<ArrowUp color="#000" size="20" />
+			<ArrowUp color="#000" size="24" />
 		{/if}
 	</button>
 </div>
@@ -103,7 +103,7 @@
 		background-color: var(--text-2);
 	}
 	button {
-		padding: 13px;
+		padding: 11px;
 		background-color: var(--bg-elevation-3);
 		border-radius: 12px;
 		border: none;

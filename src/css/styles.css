@@ -17,17 +17,55 @@
 	color: var(--text);
 	box-sizing: border-box;
 	line-height: 140%;
-  /* scroll-behavior: ; */
-	scrollbar-color: var(--bg-elevation-3) var(--bg);
-  scrollbar-width: 16px;
+	/* scroll-behavior: ; */
+	scrollbar-color: var(--bg-elevation-3) transparent;
+	scrollbar-width: 16px;
 }
 
 code {
 	font-family: 'Roboto Mono', monospace;
+	/* padding: 16px; */
+	/* overflow-x: visible; */
+	/* max-width: 768px; */
 }
 
 body {
 	background: var(--bg);
 	margin: 0;
 	padding: 0;
+}
+
+pre {
+	max-width: 768px;
+	width: 100%;
+	border: 1px solid var(--border);
+	background-color: var(--bg-elevation-2);
+	overflow-x: auto;
+	border-radius: 12px;
+	padding: 12px;
+	scrollbar-color: var(--border) transparent;
+  margin: 12px 0px;
+}
+
+p {
+  margin: 8px 0px;
+  padding: 0;
+}
+
+h4, h5, h6, strong, li {
+  margin: 0px 0px;
+  padding: 0;
+}
+
+ul, ol {
+  /* margin: 0; */
+  /* padding: 0; */
+}
+
+h1, h2, h3 {
+  margin: 8px 0px;
+}
+
+h4, h5, h6 {
+  margin: 4px 0px;
 }

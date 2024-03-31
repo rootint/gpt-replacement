@@ -1,12 +1,13 @@
 // src/api.js
 
-const BASE_URL = 'http://localhost:1337'; // Adjust this to your Flask app's URL
-// const BASE_URL = 'https://0f90-46-146-18-167.ngrok-free.app';
+// const BASE_URL = 'http://localhost:1337'; // Adjust this to your Flask app's URL
+const BASE_URL = 'https://7cfd-46-146-18-167.ngrok-free.app';
 // const BASE_URL = 'http://46.146.18.167:1337';
 
 // Helper function for fetching data
 async function fetchWithTimeout(resource, options = {}) {
 	const response = await fetch(resource, {
+		headers: { 'ngrok-skip-browser-warning': 'skip-browser-warning' },
 		...options
 	});
 	if (!response.ok) throw new Error(response.statusText);

@@ -4,9 +4,10 @@
 	import { tick, onMount, afterUpdate } from 'svelte';
 	import DynamicTextArea from '../components/DynamicTextArea.svelte';
 	import MessageButtonsRow from '../components/MessageButtonsRow.svelte';
+	import CodeComponent from '../components/CodeComponent.svelte';
 
 	let chats = [];
-	let chatId = 'aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a'; // Removed default chatId for selection purpose
+	let chatId = '66cac883-e10c-480f-b11c-5458f8579718'; // Removed default chatId for selection purpose
 	let messageList = [];
 	let messagesView;
 
@@ -34,6 +35,9 @@
 			unsubscribe(); // Cleanup on component unmount
 		};
 	});
+
+	let testString =
+		'very_long_list = [{"number_" + str(i): i**2 for i in range(10)}, {"number_" + str(j): j**2 for j in range(10)}, {"number_" + str(k): k**2 for k in range(10)}, {"number_" + str(l): l**2 for l in range(10)}, {"number_" + str(m): m**2 for m in range(10)}, {"number_" + str(n): n**2 for n in range(10)}, {"number_" + str(o): o**2 for o in range(10)}, {"number_" + str(p): p**2 for p in range(10)}, {"number_" + str(q): q**2 for q in range(10)}, {"number_" + str(r): r**2 for r in range(10)}, {"number_" + str(s): s**2 for s in range(10)}, {"number_" + str(t): t**2 for t in range(10)}, {"number_" + str(u): u**2 for u in range(10)}, {"number_" + str(v): v**2 for v in range(10)}, {"number_" + str(w): w**2 for w in range(10)}, {"number_" + str(x): x**2 for x in range(10)}, {"number_" + str(y): y**2 for y in range(10)}, {"number_" + str(z): z**2 for z in range(10)}]';
 </script>
 
 <svelte:head>
@@ -52,14 +56,24 @@
 	<div class="chat-view">
 		<div class="messages-view" bind:this={messagesView}>
 			{#each messageList as message}
-				<div class="message">
-					<h4>{message.sender == 'user' ? 'You' : 'ChatGPT'}</h4>
-					<!-- <p>{message.text}</p> -->
-					<SvelteMarkdown source={message.text}></SvelteMarkdown>
-					{#if message.sender == 'assistant'}
-						<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
-						></MessageButtonsRow>
-					{/if}
+				<div class={message.sender == 'user' ? 'user-message' : ''}>
+					<div class="message">
+						<div class="sender-name">
+							{#if message.sender != 'user'}
+								<div class="gpt-circle"></div>
+							{/if}
+							<h4>
+								{message.sender == 'user' ? 'You' : 'ChatGPT'}
+							</h4>
+						</div>
+						<!-- <p>{message.text}</p> -->
+						<!-- <SvelteMarkdown source={message.text} renderers={{ code: CodeComponent }} /> -->
+						<SvelteMarkdown source={message.text} />
+						{#if message.sender == 'assistant'}
+							<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
+							></MessageButtonsRow>
+						{/if}
+					</div>
 				</div>
 			{/each}
 		</div>
@@ -70,6 +84,27 @@
 </main>
 
 <style>
+	.user-message {
+		background-color: var(--bg-elevation-1);
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		/* max-width: unset; */
+	}
+	.gpt-circle {
+		width: 12px;
+		height: 12px;
+		border-radius: 12px;
+		background-color: var(--text-2);
+		margin-right: 8px;
+		margin-bottom: 1.5px;
+		margin-left: -21px;
+	}
+	.sender-name {
+		display: flex;
+		align-items: center;
+		/* margin-bottom: 8px; */
+	}
 	.gradient-mask {
 		z-index: 2;
 		position: absolute;
@@ -88,7 +123,6 @@
 		font-size: 16px;
 		margin: 0;
 		padding: 0;
-		margin-bottom: 8px;
 	}
 	.textfield {
 		width: 100%;

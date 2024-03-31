@@ -29,12 +29,12 @@
 			<p class="text-button-label">Copy</p>
 		{/if}
 	</button>
-	{#if isLast}
+	<!-- {#if isLast}
 		<button class="text-button" on:click={handleRegenButton}>
 			<RotateCcw color="#777" size="16" />
 			<p class="text-button-label">Regenerate</p>
 		</button>
-	{/if}
+	{/if} -->
 </div>
 
 <style>
@@ -47,7 +47,7 @@
 		color: inherit;
 	}
 	.buttons-row {
-		margin-top: 8px;
+		/* margin-top: 8px; */
 		display: flex;
 	}
 

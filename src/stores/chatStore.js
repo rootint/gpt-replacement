@@ -3,7 +3,7 @@ import { createChat, listChats, sendMessage, getMessages } from '../services/api
 
 function createChatStore() {
 	const messages = writable([]);
-	const chatId = writable('aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a');
+	const chatId = writable('66cac883-e10c-480f-b11c-5458f8579718');
 	const awaitingForResponse = writable(false);
 
 	async function fetchChatMessages(id) {
@@ -17,8 +17,7 @@ function createChatStore() {
 			// Return a new array with the new message appended
 			return [...currentMessages, { sender: 'user', text: messageToSend }];
 		});
-		let response = await sendMessage('aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a', messageToSend, sender);
-		console.log(response);
+		let response = await sendMessage('66cac883-e10c-480f-b11c-5458f8579718', messageToSend, sender);
 		// Check if the HTTP response status indicates success before proceeding to read the stream
 		if (response.ok) {
 			const reader = response.body.getReader();
@@ -28,13 +27,6 @@ function createChatStore() {
 			// Continuously read from the stream
 			reader.read().then(function processText({ done, value }) {
 				if (done) {
-					console.log('Stream complete');
-					console.log('Complete Response: ', completeResponse);
-					// Assuming the entire response is now in `completeResponse`, you can update the Svelte store
-					// messages.update((currentMessages) => [
-					// 	...currentMessages,
-					// 	{ sender: 'assistant', text: completeResponse }
-					// ]);
 					awaitingForResponse.set(false);
 					return;
 				}
@@ -45,7 +37,6 @@ function createChatStore() {
 				completeResponse += chunkText;
 
 				// Log the chunk to console (optional)
-				console.log('Received Chunk: ', chunkText);
 				messages.update((currentMessages) => {
 					if (currentMessages.at(-1).sender != 'user') {
 						return [
@@ -65,14 +56,6 @@ function createChatStore() {
 			console.error('Fetch error: Failed to load the stream');
 			awaitingForResponse.set(false);
 		}
-		// console.log(newMessage);
-		// messages.update((currentMessages) => {
-		// 	// Return a new array with the new message appended
-		// 	return [...currentMessages, { sender: 'assistant', text: newMessage.response }];
-		// });
-		// awaitingForResponse.update((_) => {
-		// 	return false;
-		// });
 		// await fetchChatMessages('46d58954-e7a2-48f5-8266-85a2655561fe'); // Refresh messages after sending
 	}
 
