@@ -5,6 +5,7 @@
 	import DynamicTextArea from '../components/DynamicTextArea.svelte';
 	import MessageButtonsRow from '../components/MessageButtonsRow.svelte';
 	import CodeComponent from '../components/CodeComponent.svelte';
+	import { Plus } from 'lucide-svelte';
 
 	let chats = [];
 	let chatId = '66cac883-e10c-480f-b11c-5458f8579718'; // Removed default chatId for selection purpose
@@ -52,6 +53,7 @@
 </svelte:head>
 
 <main>
+	<!-- <button class="new-chat-btn"><Plus></Plus></button> -->
 	<div class="gradient-mask"></div>
 	<div class="chat-view">
 		<div class="messages-view" bind:this={messagesView}>
@@ -84,6 +86,10 @@
 </main>
 
 <style>
+	/* .new-chat-btn {
+        position: absolute;
+
+	} */
 	.user-message {
 		background-color: var(--bg-elevation-1);
 		width: 100%;
