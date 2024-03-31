@@ -32,11 +32,14 @@
 		isButtonActive = message.trim();
 		message = event.target.value;
 		let amountOfLines = Math.round((event.target.scrollHeight + 2 - 24) / 20);
-		console.log('amount of lines', Math.round((event.target.scrollHeight + 2 - 24) / 20));
+		// console.log('amount of lines', Math.round((event.target.scrollHeight + 2 - 24) / 20));
 		textareaHeight = 20 * (amountOfLines > 10 ? 10 : amountOfLines) + 24 + 2;
-		console.log('scrollHeight', event.target.scrollHeight);
-		console.log('offsetHeight', event.target.offsetHeight);
-		console.log('textareaHeight', textareaHeight);
+		// console.log('scrollHeight', event.target.scrollHeight);
+		// console.log('offsetHeight', event.target.offsetHeight);
+		// console.log('textareaHeight', textareaHeight);
+		if (!isButtonActive) {
+			textareaHeight = 46;
+		}
 	}
 
 	function handleKeydown(event) {
@@ -58,7 +61,7 @@
 			focusInput();
 		}
 	}
-    
+
 	onMount(() => {
 		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
 			responsePending = value;

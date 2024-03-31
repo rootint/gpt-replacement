@@ -12,26 +12,67 @@ function createChatStore() {
 	}
 
 	async function handleSendMessage(messageToSend, sender) {
-		awaitingForResponse.update((_) => {
-			return true;
-		});
+		awaitingForResponse.set(true);
 		messages.update((currentMessages) => {
 			// Return a new array with the new message appended
 			return [...currentMessages, { sender: 'user', text: messageToSend }];
 		});
-		let newMessage = await sendMessage(
-			'aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a',
-			messageToSend,
-			sender
-		);
-		console.log(newMessage);
-		messages.update((currentMessages) => {
-			// Return a new array with the new message appended
-			return [...currentMessages, { sender: 'assistant', text: newMessage.response }];
-		});
-		awaitingForResponse.update((_) => {
-			return false;
-		});
+		let response = await sendMessage('aabd3c1e-ecaf-4e74-9ae5-1fdc4c74a11a', messageToSend, sender);
+		console.log(response);
+		// Check if the HTTP response status indicates success before proceeding to read the stream
+		if (response.ok) {
+			const reader = response.body.getReader();
+			let decoder = new TextDecoder();
+			let completeResponse = '';
+
+			// Continuously read from the stream
+			reader.read().then(function processText({ done, value }) {
+				if (done) {
+					console.log('Stream complete');
+					console.log('Complete Response: ', completeResponse);
+					// Assuming the entire response is now in `completeResponse`, you can update the Svelte store
+					// messages.update((currentMessages) => [
+					// 	...currentMessages,
+					// 	{ sender: 'assistant', text: completeResponse }
+					// ]);
+					awaitingForResponse.set(false);
+					return;
+				}
+
+				// Decode the stream chunk to text
+				let chunkText = decoder.decode(value, { stream: true });
+				// Accumulate the streamed chunks (optional)
+				completeResponse += chunkText;
+
+				// Log the chunk to console (optional)
+				console.log('Received Chunk: ', chunkText);
+				messages.update((currentMessages) => {
+					if (currentMessages.at(-1).sender != 'user') {
+						return [
+							...currentMessages.slice(0, currentMessages.length - 1),
+							{ sender: 'assistant', text: completeResponse }
+						];
+					} else {
+						return [...currentMessages, { sender: 'assistant', text: completeResponse }];
+					}
+				});
+
+				// Recursively read the next chunk
+				reader.read().then(processText);
+			});
+		} else {
+			// Handle HTTP error responses
+			console.error('Fetch error: Failed to load the stream');
+			awaitingForResponse.set(false);
+		}
+		// console.log(newMessage);
+		// messages.update((currentMessages) => {
+		// 	// Return a new array with the new message appended
+		// 	return [...currentMessages, { sender: 'assistant', text: newMessage.response }];
+		// });
+		// awaitingForResponse.update((_) => {
+		// 	return false;
+		// });
 		// await fetchChatMessages('46d58954-e7a2-48f5-8266-85a2655561fe'); // Refresh messages after sending
 	}
 

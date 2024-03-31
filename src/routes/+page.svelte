@@ -16,7 +16,6 @@
 	};
 
 	const smoothScrollToBottom = async (node) => {
-		// console.log('scrolling', node);
 		node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
 	};
 
@@ -55,8 +54,8 @@
 			{#each messageList as message}
 				<div class="message">
 					<h4>{message.sender == 'user' ? 'You' : 'ChatGPT'}</h4>
-					<p>{message.text}</p>
-					<!-- <SvelteMarkdown source={message.text}></SvelteMarkdown> -->
+					<!-- <p>{message.text}</p> -->
+					<SvelteMarkdown source={message.text}></SvelteMarkdown>
 					{#if message.sender == 'assistant'}
 						<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
 						></MessageButtonsRow>

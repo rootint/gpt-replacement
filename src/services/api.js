@@ -39,7 +39,7 @@ export async function sendMessage(chatId, text, sender) {
 			sender
 		})
 	});
-	return response.json();
+	return response;
 }
 
 export async function getMessages(chatId) {
