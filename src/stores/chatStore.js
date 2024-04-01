@@ -3,11 +3,16 @@ import { createChat, listChats, sendMessage, getMessages } from '../services/api
 
 function createChatStore() {
 	const messages = writable([]);
-	const chatId = writable('66cac883-e10c-480f-b11c-5458f8579718');
+	// const initialChatId = localStorage.getItem('chatId') || '';
+	const chatId = writable('');
+	// const chatId = writable('66cac883-e10c-480f-b11c-5458f8579718');
 	const awaitingForResponse = writable(false);
+	const chats = writable([]);
 
 	async function fetchChatMessages(id) {
 		const fetchedMessages = await getMessages(id);
+		chatId.set(id);
+    localStorage.setItem('chatId', id);
 		messages.set(fetchedMessages);
 	}
 
@@ -17,7 +22,12 @@ function createChatStore() {
 			// Return a new array with the new message appended
 			return [...currentMessages, { sender: 'user', text: messageToSend }];
 		});
-		let response = await sendMessage('66cac883-e10c-480f-b11c-5458f8579718', messageToSend, sender);
+		let currentChatId = '';
+		const unsubscribe = chatId.subscribe((value) => {
+			currentChatId = value;
+		});
+		unsubscribe();
+		let response = await sendMessage(currentChatId, messageToSend, sender);
 		// Check if the HTTP response status indicates success before proceeding to read the stream
 		if (response.ok) {
 			const reader = response.body.getReader();
@@ -56,15 +66,48 @@ function createChatStore() {
 			console.error('Fetch error: Failed to load the stream');
 			awaitingForResponse.set(false);
 		}
-		// await fetchChatMessages('46d58954-e7a2-48f5-8266-85a2655561fe'); // Refresh messages after sending
+	}
+
+	// Custom function to safely initialize the chatId from localStorage
+	function initChatId() {
+		if (typeof localStorage !== 'undefined') {
+			const storedChatId = localStorage.getItem('chatId');
+			if (storedChatId) {
+				chatId.set(storedChatId);
+			} else {
+				// Handle case where there is no stored ID, e.g., set a default or generate one as needed
+				chatId.set('66cac883-e10c-480f-b11c-5458f8579718');
+			}
+		}
+	}
+
+	// Call initChatId in a browser-only context
+	if (typeof window !== 'undefined') {
+		initChatId();
+	}
+
+	async function handleCreateChat() {
+		let response = await createChat();
+		console.log('New Chat ID', response.chat_id);
+		chatId.set(response.chat_id);
+		// Save the new chat ID to localStorage
+		localStorage.setItem('chatId', response.chat_id);
+	}
+
+	async function fetchChats() {
+		let response = await listChats();
+		chats.set(response);
 	}
 
 	return {
 		messages,
 		chatId,
 		awaitingForResponse,
-		fetchChatMessages, // Expose this function
-		handleSendMessage
+		chats,
+		fetchChatMessages,
+		handleCreateChat,
+		handleSendMessage,
+		fetchChats,
 	};
 }
 

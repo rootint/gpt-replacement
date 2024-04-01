@@ -4,11 +4,10 @@
 	import { tick, onMount, afterUpdate } from 'svelte';
 	import DynamicTextArea from '../components/DynamicTextArea.svelte';
 	import MessageButtonsRow from '../components/MessageButtonsRow.svelte';
-	import CodeComponent from '../components/CodeComponent.svelte';
-	import { Plus } from 'lucide-svelte';
+	// import CodeComponent from '../components/CodeComponent.svelte';
+	import ChatsSidebar from '../components/ChatsSidebar.svelte';
 
-	let chats = [];
-	let chatId = '66cac883-e10c-480f-b11c-5458f8579718'; // Removed default chatId for selection purpose
+	let chatId = ''; // Removed default chatId for selection purpose
 	let messageList = [];
 	let messagesView;
 
@@ -22,11 +21,15 @@
 	};
 
 	onMount(async () => {
-		await chatStore.fetchChatMessages(chatId);
+		const unsubscribeFromId = chatStore.chatId.subscribe(async (value) => {
+			chatId = value;
+			await chatStore.fetchChatMessages(chatId);
+		});
 		const unsubscribe = chatStore.messages.subscribe(async (value) => {
 			messageList = value;
 			await tick();
-			smoothScrollToBottom(messagesView);
+			// TODO: figure out smoothness
+			scrollToBottom(messagesView);
 		});
 
 		console.log(messageList);
@@ -34,11 +37,9 @@
 		scrollToBottom(messagesView);
 		return () => {
 			unsubscribe(); // Cleanup on component unmount
+			unsubscribeFromId();
 		};
 	});
-
-	let testString =
-		'very_long_list = [{"number_" + str(i): i**2 for i in range(10)}, {"number_" + str(j): j**2 for j in range(10)}, {"number_" + str(k): k**2 for k in range(10)}, {"number_" + str(l): l**2 for l in range(10)}, {"number_" + str(m): m**2 for m in range(10)}, {"number_" + str(n): n**2 for n in range(10)}, {"number_" + str(o): o**2 for o in range(10)}, {"number_" + str(p): p**2 for p in range(10)}, {"number_" + str(q): q**2 for q in range(10)}, {"number_" + str(r): r**2 for r in range(10)}, {"number_" + str(s): s**2 for s in range(10)}, {"number_" + str(t): t**2 for t in range(10)}, {"number_" + str(u): u**2 for u in range(10)}, {"number_" + str(v): v**2 for v in range(10)}, {"number_" + str(w): w**2 for w in range(10)}, {"number_" + str(x): x**2 for x in range(10)}, {"number_" + str(y): y**2 for y in range(10)}, {"number_" + str(z): z**2 for z in range(10)}]';
 </script>
 
 <svelte:head>
@@ -53,12 +54,12 @@
 </svelte:head>
 
 <main>
-	<!-- <button class="new-chat-btn"><Plus></Plus></button> -->
-	<div class="gradient-mask"></div>
+	<!-- <div class="gradient-mask"></div> -->
+	<ChatsSidebar></ChatsSidebar>
 	<div class="chat-view">
 		<div class="messages-view" bind:this={messagesView}>
 			{#each messageList as message}
-				<div class={message.sender == 'user' ? 'user-message' : ''}>
+				<div class={message.sender == 'user' ? 'user-message' : 'bot-message'}>
 					<div class="message">
 						<div class="sender-name">
 							{#if message.sender != 'user'}
@@ -92,6 +93,12 @@
 	} */
 	.user-message {
 		background-color: var(--bg-elevation-1);
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		/* max-width: unset; */
+	}
+	.bot-message {
 		width: 100%;
 		display: flex;
 		justify-content: center;
@@ -137,7 +144,7 @@
 		align-items: center;
 	}
 	.message {
-		width: 100vw;
+		width: 100%;
 		max-width: 768px;
 		display: flex;
 		align-items: start;
@@ -146,10 +153,10 @@
 		/* overflow-x: hidden; */
 	}
 	.messages-view {
-		flex: 1;
-		flex-grow: 1;
+		/* flex: 1; */
+		/* flex-grow: 1; */
 		overflow-y: auto;
-		width: 100vw;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -157,7 +164,7 @@
 		padding-bottom: 8px;
 	}
 	.chat-view {
-		width: 100vw;
+		width: 100%;
 		height: 100vh;
 		color: #fff;
 		display: flex;
