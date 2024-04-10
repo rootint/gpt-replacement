@@ -34,6 +34,10 @@
 		// }
 	};
 
+	function containsFilePlaceholder(message) {
+		return message.includes('<PDF_HERE>');
+	}
+
 	onMount(async () => {
 		const unsubscribeFromId = chatStore.chatId.subscribe(async (value) => {
 			chatId = value;
@@ -87,6 +91,9 @@
 						</div>
 						<!-- <p>{message.text}</p> -->
 						<!-- <SvelteMarkdown source={message.text} renderers={{ code: CodeComponent }} /> -->
+						{#if containsFilePlaceholder(message.text)}
+							<div class="file-attached-badge">File attached</div>
+						{/if}
 						<SvelteMarkdown source={message.text} />
 						{#if message.sender == 'assistant'}
 							<MessageButtonsRow {message} isLast={messageList.at(-1) === message}
@@ -103,6 +110,16 @@
 </main>
 
 <style>
+	.file-attached-badge {
+		padding: 8px 12px;
+		color: var(--text); /* Example badge color */
+		background-color: var(--bg-elevation-3);
+		border-radius: 8px;
+		font-size: 12px;
+		margin-top: 12px;
+        margin-bottom: 12px;
+		display: inline-block; /* Or flex depending on your design */
+	}
 	.sidebar {
 		width: 300px;
 	}

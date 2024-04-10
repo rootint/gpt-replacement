@@ -28,6 +28,7 @@
 		isButtonActive = false;
 		textareaHeight = 46;
 		await chatStore.handleSendMessage(messageCopy, fileToSend, 'user');
+        fileToSend = null;
 	}
 
 	function handleInput(event) {
@@ -91,7 +92,9 @@
 
 <svelte:window on:keydown={handleSlashPress} />
 
-{fileToSend}
+{#if fileToSend != null}
+    {fileToSend}
+{/if}
 <div class="textarea-row">
 	<input
 		type="file"
