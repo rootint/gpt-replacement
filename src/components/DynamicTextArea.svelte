@@ -12,6 +12,7 @@
 	let responsePending;
 	let fileInput;
 	let fileToSend = null;
+	let chatInstruction;
 
 	function handleFocus() {
 		isActive = true;
@@ -28,7 +29,7 @@
 		isButtonActive = false;
 		textareaHeight = 46;
 		await chatStore.handleSendMessage(messageCopy, fileToSend, 'user');
-        fileToSend = null;
+		fileToSend = null;
 	}
 
 	function handleInput(event) {
@@ -79,13 +80,23 @@
 		// Here, you can also call a function to upload the file
 	}
 
+	function handleChangeInstruction() {
+		console.log('change instruction');
+		chatStore.handleChangeInstruction(chatInstruction);
+	}
+
 	onMount(() => {
 		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
 			responsePending = value;
 		});
 
+		const unsubscribeFromInstruction = chatStore.instruction.subscribe((value) => {
+			chatInstruction = value;
+		});
+
 		return () => {
 			unsubscribe(); // Cleanup on component unmount
+			unsubscribeFromInstruction();
 		};
 	});
 </script>
@@ -93,8 +104,12 @@
 <svelte:window on:keydown={handleSlashPress} />
 
 {#if fileToSend != null}
-    {fileToSend}
+	{fileToSend}
 {/if}
+<textarea type="text" bind:value={chatInstruction} class="instruction-input" /><button
+	on:click={handleChangeInstruction}
+	class="attach-file-btn">Change Instruction</button
+>
 <div class="textarea-row">
 	<input
 		type="file"

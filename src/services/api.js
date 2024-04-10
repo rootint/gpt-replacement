@@ -61,6 +61,26 @@ export async function getMessages(chatId) {
 	return response.json();
 }
 
+export async function changeInstruction(chatId, instruction) {
+	const response = await fetchWithTimeout(`${BASE_URL}/change-instruction/${chatId}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			instruction: instruction
+		})
+	});
+	return response.json();
+}
+
+export async function getInstruction(chatId) {
+	const response = await fetchWithTimeout(`${BASE_URL}/get-instruction/${chatId}`, {
+		method: 'GET'
+	});
+	return response.json();
+}
+
 // async function fetchStream() {
 // 	const response = await fetch('http://localhost:1338/send-receive-message', {
 // 		method: 'POST',

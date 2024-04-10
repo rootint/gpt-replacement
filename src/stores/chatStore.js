@@ -1,5 +1,11 @@
 import { writable } from 'svelte/store';
-import { listChats, sendMessage, getMessages } from '../services/api';
+import {
+	listChats,
+	sendMessage,
+	getMessages,
+	changeInstruction,
+	getInstruction
+} from '../services/api';
 
 function createChatStore() {
 	const messages = writable([]);
@@ -8,12 +14,16 @@ function createChatStore() {
 	// const chatId = writable('66cac883-e10c-480f-b11c-5458f8579718');
 	const awaitingForResponse = writable(false);
 	const chats = writable([]);
+	const instruction = writable('');
 
 	async function fetchChatMessages(id) {
 		if (id != '') {
 			const fetchedMessages = await getMessages(id);
+			const fetchedInstruction = await getInstruction(id);
 			chatId.set(id);
+			instruction.set(fetchedInstruction);
 			localStorage.setItem('chatId', id);
+			localStorage.setItem('instruction', fetchedInstruction);
 			messages.set(fetchedMessages);
 		} else {
 			messages.set([]);
@@ -104,50 +114,28 @@ function createChatStore() {
 		chats.set(response);
 	}
 
+	async function handleChangeInstruction(instruction) {
+		let currentChatId = '';
+		const unsubscribe = chatId.subscribe((value) => {
+			currentChatId = value;
+		});
+		unsubscribe();
+		await changeInstruction(currentChatId, instruction);
+	}
+
 	return {
 		messages,
 		chatId,
 		awaitingForResponse,
 		chats,
+		instruction,
 		fetchChatMessages,
 		handleCreateChat,
 		handleSendMessage,
-		fetchChats
+		fetchChats,
+		handleChangeInstruction,
+		getInstruction
 	};
 }
 
 export const chatStore = createChatStore();
-
-// function createChatStore() {
-// 	const messages = writable([]); // This stores the chat messages
-// 	const chatId = writable('46d58954-e7a2-48f5-8266-85a2655561fe'); // This stores the current chat ID
-
-// 	async function fetchChats() {
-// 		chats = await listChats();
-// 		if (chats && chats.length > 0 && !chatId) {
-// 			chatId.set(chats[0].chat_id); // Automatically select the first chat on load
-// 			await fetchChatMessages();
-// 		}
-// 	}
-
-// 	async function fetchChatMessages(id) {
-// 		if (!id) return;
-// 		const fetchedMessages = await getMessages(id);
-// 		messages.set(fetchedMessages); // Update the messages store
-// 		chatId.set(id); // Update the chat ID store
-// 		// console.log('messages:',);
-// 	}
-
-// 	async function handleSendMessage(messageToSend, sender) {
-// 		if (!messageToSend.trim()) return;
-// 		await sendMessage(chatId, messageToSend, sender);
-// 		await fetchChatMessages(chatId); // Refresh messages after sending
-// 	}
-
-// 	return {
-// 		subscribe: messages.subscribe,
-// 		fetchChatMessages,
-// 		handleSendMessage,
-// 		chatId
-// 	};
-// }
