@@ -1,3 +1,4 @@
+<!-- 1160px -->
 <script>
 	import { chatStore } from '../stores/chatStore';
 	import SvelteMarkdown from 'svelte-markdown';
@@ -11,13 +12,26 @@
 	let messageList = [];
 	let messagesView;
 
+	const isUserAtBottom = (node) => {
+		// Threshold in pixels to consider the user "at the bottom"
+		// For instance, if the user is within 100px from the bottom, it's considered at the bottom.
+		const threshold = 100;
+		const position = node.scrollTop + node.offsetHeight;
+		const difference = node.scrollHeight - position;
+		return difference < threshold;
+	};
+
 	const scrollToBottom = async (node) => {
 		// console.log('scrolling', node);
+
 		node.scroll({ top: node.scrollHeight });
 	};
 
-	const smoothScrollToBottom = async (node) => {
-		node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+	const messageScrollToBottom = async (node) => {
+		// if (isUserAtBottom(node)) {
+		// node.scroll({ top: node.scrollHeight, behavior: 'smooth' });
+		node.scroll({ top: node.scrollHeight });
+		// }
 	};
 
 	onMount(async () => {
@@ -54,9 +68,11 @@
 </svelte:head>
 
 <main>
-	<!-- <div class="gradient-mask"></div> -->
-	<ChatsSidebar></ChatsSidebar>
+	<div class="sidebar">
+		<ChatsSidebar></ChatsSidebar>
+	</div>
 	<div class="chat-view">
+		<!-- <div class="gradient-mask"></div> -->
 		<div class="messages-view" bind:this={messagesView}>
 			{#each messageList as message}
 				<div class={message.sender == 'user' ? 'user-message' : 'bot-message'}>
@@ -87,6 +103,9 @@
 </main>
 
 <style>
+	.sidebar {
+		width: 300px;
+	}
 	/* .new-chat-btn {
         position: absolute;
 
@@ -164,6 +183,7 @@
 		padding-bottom: 8px;
 	}
 	.chat-view {
+		flex-grow: 1;
 		width: 100%;
 		height: 100vh;
 		color: #fff;

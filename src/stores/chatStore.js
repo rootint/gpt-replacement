@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { createChat, listChats, sendMessage, getMessages } from '../services/api';
+import { listChats, sendMessage, getMessages } from '../services/api';
 
 function createChatStore() {
 	const messages = writable([]);
@@ -10,13 +10,17 @@ function createChatStore() {
 	const chats = writable([]);
 
 	async function fetchChatMessages(id) {
-		const fetchedMessages = await getMessages(id);
-		chatId.set(id);
-    localStorage.setItem('chatId', id);
-		messages.set(fetchedMessages);
+		if (id != '') {
+			const fetchedMessages = await getMessages(id);
+			chatId.set(id);
+			localStorage.setItem('chatId', id);
+			messages.set(fetchedMessages);
+		} else {
+			messages.set([]);
+		}
 	}
 
-	async function handleSendMessage(messageToSend, sender) {
+	async function handleSendMessage(messageToSend, fileToSend, sender) {
 		awaitingForResponse.set(true);
 		messages.update((currentMessages) => {
 			// Return a new array with the new message appended
@@ -27,7 +31,7 @@ function createChatStore() {
 			currentChatId = value;
 		});
 		unsubscribe();
-		let response = await sendMessage(currentChatId, messageToSend, sender);
+		let response = await sendMessage(currentChatId, messageToSend, fileToSend, sender);
 		// Check if the HTTP response status indicates success before proceeding to read the stream
 		if (response.ok) {
 			const reader = response.body.getReader();
@@ -76,7 +80,7 @@ function createChatStore() {
 				chatId.set(storedChatId);
 			} else {
 				// Handle case where there is no stored ID, e.g., set a default or generate one as needed
-				chatId.set('66cac883-e10c-480f-b11c-5458f8579718');
+				chatId.set('');
 			}
 		}
 	}
@@ -87,11 +91,12 @@ function createChatStore() {
 	}
 
 	async function handleCreateChat() {
-		let response = await createChat();
-		console.log('New Chat ID', response.chat_id);
-		chatId.set(response.chat_id);
+		chatId.set('');
+		// localStorage.setItem('chatId', '');
+		// let response = await createChat();
+		// console.log('New Chat ID', response.chat_id);
+		// chatId.set(response.chat_id);
 		// Save the new chat ID to localStorage
-		localStorage.setItem('chatId', response.chat_id);
 	}
 
 	async function fetchChats() {
@@ -107,7 +112,7 @@ function createChatStore() {
 		fetchChatMessages,
 		handleCreateChat,
 		handleSendMessage,
-		fetchChats,
+		fetchChats
 	};
 }
 

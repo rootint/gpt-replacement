@@ -1,7 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { chatStore } from '../stores/chatStore';
-	import { ArrowUp } from 'lucide-svelte';
+	import { ArrowUp, Paperclip } from 'lucide-svelte';
 	import LoadingSpinner from './LoadingSpinner.svelte';
 
 	let message = '';
@@ -10,6 +10,8 @@
 	let textareaHeight = 46;
 	let inputElement;
 	let responsePending;
+	let fileInput;
+	let fileToSend = null;
 
 	function handleFocus() {
 		isActive = true;
@@ -25,7 +27,7 @@
 		message = '';
 		isButtonActive = false;
 		textareaHeight = 46;
-		await chatStore.handleSendMessage(messageCopy, 'user');
+		await chatStore.handleSendMessage(messageCopy, fileToSend, 'user');
 	}
 
 	function handleInput(event) {
@@ -62,6 +64,20 @@
 		}
 	}
 
+	function attachFile() {
+		console.log('button clicked!');
+		fileInput.click();
+	}
+
+	// Function to handle file selection
+	function handleFileChange(event) {
+		const file = event.target.files[0];
+		if (!file) return;
+		fileToSend = file;
+		console.log(file); // For debugging: to see the selected file details
+		// Here, you can also call a function to upload the file
+	}
+
 	onMount(() => {
 		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
 			responsePending = value;
@@ -75,7 +91,18 @@
 
 <svelte:window on:keydown={handleSlashPress} />
 
+{fileToSend}
 <div class="textarea-row">
+	<input
+		type="file"
+		accept="application/pdf"
+		bind:this={fileInput}
+		on:change={handleFileChange}
+		class="hidden-file-input"
+	/>
+	<button class="attach-file-btn" on:click={attachFile}>
+		<Paperclip></Paperclip>
+	</button>
 	<textarea
 		bind:this={inputElement}
 		on:focus={handleFocus}
@@ -97,6 +124,15 @@
 </div>
 
 <style>
+	.attach-file-btn {
+		cursor: pointer;
+		pointer-events: auto;
+		margin-right: 12px;
+	}
+
+	.hidden-file-input {
+		display: none;
+	}
 	.buttonactive {
 		pointer-events: auto;
 		cursor: pointer;
