@@ -7,6 +7,7 @@
 	import MessageButtonsRow from '../components/MessageButtonsRow.svelte';
 	// import CodeComponent from '../components/CodeComponent.svelte';
 	import ChatsSidebar from '../components/ChatsSidebar.svelte';
+	import SettingsButton from '../components/SettingsButton.svelte';
 
 	let chatId = ''; // Removed default chatId for selection purpose
 	let messageList = [];
@@ -72,6 +73,9 @@
 </svelte:head>
 
 <main>
+    <div class="settings-button-wrapper">
+        <SettingsButton></SettingsButton>
+    </div>
 	<div class="sidebar">
 		<ChatsSidebar></ChatsSidebar>
 	</div>
@@ -110,6 +114,14 @@
 </main>
 
 <style>
+    .settings-button-wrapper {
+        position: absolute;
+        right: 24px;
+        top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+    }
 	.file-attached-badge {
 		padding: 8px 12px;
 		color: var(--text); /* Example badge color */
@@ -185,7 +197,9 @@
 		display: flex;
 		align-items: start;
 		flex-direction: column;
-		padding: 16px 0;
+		/* padding: 16px 0; */
+        padding-top: 16px;
+        padding-bottom: 8px;
 		/* overflow-x: hidden; */
 	}
 	.messages-view {

@@ -80,23 +80,13 @@
 		// Here, you can also call a function to upload the file
 	}
 
-	function handleChangeInstruction() {
-		console.log('change instruction');
-		chatStore.handleChangeInstruction(chatInstruction);
-	}
-
 	onMount(() => {
 		const unsubscribe = chatStore.awaitingForResponse.subscribe((value) => {
 			responsePending = value;
 		});
 
-		const unsubscribeFromInstruction = chatStore.instruction.subscribe((value) => {
-			chatInstruction = value;
-		});
-
 		return () => {
 			unsubscribe(); // Cleanup on component unmount
-			unsubscribeFromInstruction();
 		};
 	});
 </script>
@@ -106,10 +96,10 @@
 {#if fileToSend != null}
 	{fileToSend}
 {/if}
-<textarea type="text" bind:value={chatInstruction} class="instruction-input" /><button
+<!-- <textarea type="text" bind:value={chatInstruction} class="instruction-input" /><button
 	on:click={handleChangeInstruction}
 	class="attach-file-btn">Change Instruction</button
->
+> -->
 <div class="textarea-row">
 	<input
 		type="file"
@@ -119,8 +109,9 @@
 		class="hidden-file-input"
 	/>
 	<button class="attach-file-btn" on:click={attachFile}>
-		<Paperclip></Paperclip>
+		<Paperclip size="20"></Paperclip>
 	</button>
+	<!-- <div class="text-container"> -->
 	<textarea
 		bind:this={inputElement}
 		on:focus={handleFocus}
@@ -132,6 +123,7 @@
 		class:active={isActive}
 		placeholder="Message ChatGPT 4..."
 	></textarea>
+	<!-- </div> -->
 	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}>
 		{#if responsePending}
 			<LoadingSpinner />
@@ -146,6 +138,7 @@
 		cursor: pointer;
 		pointer-events: auto;
 		margin-right: 12px;
+		margin-left: 0px;
 	}
 
 	.hidden-file-input {
