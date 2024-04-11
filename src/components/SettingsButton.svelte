@@ -7,7 +7,7 @@
 	let instruction;
 	function toggleSettingsMenu() {
 		toggled = !toggled;
-        console.log('change instruction');
+		console.log('change instruction');
 		chatStore.handleChangeInstruction(instruction);
 	}
 
@@ -23,13 +23,13 @@
 </script>
 
 {#if toggled}
-	<button on:click={toggleSettingsMenu}><X color="#e1e1e1"></X></button>
+	<button on:click={toggleSettingsMenu}><X size="20" color="#e1e1e1"></X></button>
 	<div class="settings-menu">
 		<h3>Custom Instruction</h3>
 		<textarea bind:value={instruction}></textarea>
 	</div>
 {:else}
-	<button on:click={toggleSettingsMenu}><Settings2 color="#e1e1e1"></Settings2></button>
+	<button on:click={toggleSettingsMenu}><Settings2 size="20" color="#e1e1e1"></Settings2></button>
 {/if}
 
 <style>
@@ -37,9 +37,9 @@
 		border-radius: 8px;
 		background-color: var(--bg-elevation-5);
 		border: var(--border-2) solid 1px;
-        padding: 16px;
-        resize: none;
-        width: 33vw;
+		padding: 16px;
+		resize: none;
+		width: 33vw;
 	}
 	h3 {
 		font-weight: 500;

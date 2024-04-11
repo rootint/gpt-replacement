@@ -177,10 +177,10 @@
 		height: 50px;
 		background-image: linear-gradient(rgba(0, 0, 0, 255), rgba(0, 0, 0, 0));
 	}
-	p {
+	/* p {
 		margin: 0;
 		padding: 0;
-	}
+	} */
 	h4 {
 		font-weight: 500;
 		font-size: 16px;
