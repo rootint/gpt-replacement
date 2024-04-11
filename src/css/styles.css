@@ -24,6 +24,7 @@
 	/* scroll-behavior: ; */
 	scrollbar-color: var(--bg-elevation-3) transparent;
 	scrollbar-width: 16px;
+  scroll-behavior: smooth;
 }
 
 code {

@@ -45,15 +45,15 @@
 			await chatStore.fetchChatMessages(chatId);
 		});
 		const unsubscribe = chatStore.messages.subscribe(async (value) => {
-			messageList = value;
-			await tick();
+			messageList = value.reverse();
+			// await tick();
 			// TODO: figure out smoothness
-			scrollToBottom(messagesView);
+			// scrollToBottom(messagesView);
 		});
 
-		console.log(messageList);
-		await tick();
-		scrollToBottom(messagesView);
+		// console.log(messageList);
+		// await tick();
+		// scrollToBottom(messagesView);
 		return () => {
 			unsubscribe(); // Cleanup on component unmount
 			unsubscribeFromId();
@@ -121,7 +121,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: end;
-        z-index: 4;
+		z-index: 4;
 	}
 	.file-attached-badge {
 		padding: 8px 12px;
@@ -135,7 +135,7 @@
 	}
 	.sidebar {
 		width: 300px;
-        z-index: 4;
+		z-index: 4;
 	}
 	/* .new-chat-btn {
         position: absolute;
@@ -210,7 +210,7 @@
 		overflow-y: auto;
 		width: 100%;
 		display: flex;
-		flex-direction: column;
+		flex-direction: column-reverse;
 		align-items: center;
 		padding-top: 24px;
 		padding-bottom: 16px;

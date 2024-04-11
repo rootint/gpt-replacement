@@ -34,7 +34,7 @@ function createChatStore() {
 		awaitingForResponse.set(true);
 		messages.update((currentMessages) => {
 			// Return a new array with the new message appended
-			return [...currentMessages, { sender: 'user', text: messageToSend }];
+			return [...currentMessages.reverse(), { sender: 'user', text: messageToSend }];
 		});
 		let currentChatId = '';
 		const unsubscribe = chatId.subscribe((value) => {
@@ -61,15 +61,27 @@ function createChatStore() {
 				completeResponse += chunkText;
 
 				// Log the chunk to console (optional)
+				// messages.update((currentMessages) => {
+				// 	if (currentMessages.at(-1).sender != 'user') {
+				// 		return [
+				// 			{ sender: 'assistant', text: completeResponse },
+				// 			...currentMessages.slice(0, currentMessages.length - 1)
+				// 		];
+				// 	} else {
+				// 		return [...currentMessages, { sender: 'assistant', text: completeResponse }];
+				// 	}
+				// });
+				// Since we're using reversed lists, prepend the streamed response.
 				messages.update((currentMessages) => {
-					if (currentMessages.at(-1).sender != 'user') {
-						return [
-							...currentMessages.slice(0, currentMessages.length - 1),
-							{ sender: 'assistant', text: completeResponse }
-						];
+					let lastMessage = currentMessages[0];
+					if (lastMessage && lastMessage.sender === 'assistant') {
+						// Update last assistant message if it's still being received
+						currentMessages[0].text = completeResponse;
 					} else {
-						return [...currentMessages, { sender: 'assistant', text: completeResponse }];
+						// Otherwise, prepend new assistant message
+						currentMessages = [{ sender: 'assistant', text: completeResponse }, ...currentMessages];
 					}
+					return currentMessages.reverse();
 				});
 
 				// Recursively read the next chunk
