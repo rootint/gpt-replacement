@@ -73,15 +73,15 @@
 </svelte:head>
 
 <main>
-    <div class="settings-button-wrapper">
-        <SettingsButton></SettingsButton>
-    </div>
+	<div class="settings-button-wrapper">
+		<SettingsButton></SettingsButton>
+	</div>
 	<div class="sidebar">
 		<ChatsSidebar></ChatsSidebar>
 	</div>
 	<div class="chat-view">
-		<!-- <div class="gradient-mask"></div> -->
 		<div class="messages-view" bind:this={messagesView}>
+			<div class="gradient-mask"></div>
 			{#each messageList as message}
 				<div class={message.sender == 'user' ? 'user-message' : 'bot-message'}>
 					<div class="message">
@@ -114,14 +114,15 @@
 </main>
 
 <style>
-    .settings-button-wrapper {
-        position: absolute;
-        right: 24px;
-        top: 24px;
-        display: flex;
-        flex-direction: column;
-        align-items: end;
-    }
+	.settings-button-wrapper {
+		position: absolute;
+		right: 24px;
+		top: 24px;
+		display: flex;
+		flex-direction: column;
+		align-items: end;
+        z-index: 4;
+	}
 	.file-attached-badge {
 		padding: 8px 12px;
 		color: var(--text); /* Example badge color */
@@ -129,11 +130,12 @@
 		border-radius: 8px;
 		font-size: 12px;
 		margin-top: 12px;
-        margin-bottom: 12px;
+		margin-bottom: 12px;
 		display: inline-block; /* Or flex depending on your design */
 	}
 	.sidebar {
 		width: 300px;
+        z-index: 4;
 	}
 	/* .new-chat-btn {
         position: absolute;
@@ -198,8 +200,8 @@
 		align-items: start;
 		flex-direction: column;
 		/* padding: 16px 0; */
-        padding-top: 16px;
-        padding-bottom: 8px;
+		padding-top: 16px;
+		padding-bottom: 8px;
 		/* overflow-x: hidden; */
 	}
 	.messages-view {
@@ -211,7 +213,7 @@
 		flex-direction: column;
 		align-items: center;
 		padding-top: 24px;
-		padding-bottom: 8px;
+		padding-bottom: 16px;
 	}
 	.chat-view {
 		flex-grow: 1;

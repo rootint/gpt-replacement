@@ -4,10 +4,11 @@
 	import { ArrowUp, Paperclip } from 'lucide-svelte';
 	import LoadingSpinner from './LoadingSpinner.svelte';
 
+	const LINE_HEIGHT = 20;
 	let message = '';
 	let isActive = false;
 	let isButtonActive = false;
-	let textareaHeight = 46;
+	let textareaHeight = LINE_HEIGHT;
 	let inputElement;
 	let responsePending;
 	let fileInput;
@@ -27,7 +28,7 @@
 		let messageCopy = message;
 		message = '';
 		isButtonActive = false;
-		textareaHeight = 46;
+		textareaHeight = LINE_HEIGHT;
 		await chatStore.handleSendMessage(messageCopy, fileToSend, 'user');
 		fileToSend = null;
 	}
@@ -35,14 +36,14 @@
 	function handleInput(event) {
 		isButtonActive = message.trim();
 		message = event.target.value;
-		let amountOfLines = Math.round((event.target.scrollHeight + 2 - 24) / 20);
+		let amountOfLines = Math.round((event.target.scrollHeight - LINE_HEIGHT) / LINE_HEIGHT);
 		// console.log('amount of lines', Math.round((event.target.scrollHeight + 2 - 24) / 20));
-		textareaHeight = 20 * (amountOfLines > 10 ? 10 : amountOfLines) + 24 + 2;
+		textareaHeight = LINE_HEIGHT * (amountOfLines > 10 ? 10 : amountOfLines) + LINE_HEIGHT;
 		// console.log('scrollHeight', event.target.scrollHeight);
 		// console.log('offsetHeight', event.target.offsetHeight);
 		// console.log('textareaHeight', textareaHeight);
 		if (!isButtonActive) {
-			textareaHeight = 46;
+			textareaHeight = LINE_HEIGHT;
 		}
 	}
 
@@ -108,22 +109,21 @@
 		on:change={handleFileChange}
 		class="hidden-file-input"
 	/>
-	<button class="attach-file-btn" on:click={attachFile}>
-		<Paperclip size="20"></Paperclip>
-	</button>
-	<!-- <div class="text-container"> -->
-	<textarea
-		bind:this={inputElement}
-		on:focus={handleFocus}
-		on:blur={handleBlur}
-		bind:value={message}
-		on:input={handleInput}
-		on:keydown={handleKeydown}
-		style="height: {textareaHeight}px;"
-		class:active={isActive}
-		placeholder="Message ChatGPT 4..."
-	></textarea>
-	<!-- </div> -->
+	<div class="text-container" class:active={isActive}>
+		<button class="attach-file-btn" on:click={attachFile}>
+			<Paperclip size="18" color="#e1e1e1"></Paperclip>
+		</button>
+		<textarea
+			bind:this={inputElement}
+			on:focus={handleFocus}
+			on:blur={handleBlur}
+			bind:value={message}
+			on:input={handleInput}
+			on:keydown={handleKeydown}
+			style="height: {textareaHeight}px;"
+			placeholder="Message ChatGPT 4..."
+		></textarea>
+	</div>
 	<button on:click={handleMessageSend} class:buttonactive={isButtonActive}>
 		{#if responsePending}
 			<LoadingSpinner />
@@ -134,11 +134,30 @@
 </div>
 
 <style>
+	.text-container {
+		display: flex;
+		align-items: end;
+		width: 100%;
+		padding: 12px;
+		box-sizing: border-box;
+		color: var(--text);
+		background-color: var(--bg-elevation-1);
+		border: var(--border) solid 1px;
+		border-radius: 12px;
+		font-size: 14px;
+		transition: border-color 0.2s ease;
+		outline: none;
+		scrollbar-width: thin;
+		scrollbar-color: var(--border) var(--bg-elevation-1);
+	}
 	.attach-file-btn {
 		cursor: pointer;
 		pointer-events: auto;
-		margin-right: 12px;
+		margin-right: 16px;
 		margin-left: 0px;
+		padding: 0;
+		background-color: var(--bg-elevation-1);
+		padding-bottom: 1.5px;
 	}
 
 	.hidden-file-input {
@@ -172,21 +191,23 @@
 	}
 	textarea {
 		width: 100%;
-		padding: 12px;
+		padding: 0;
+		margin: 0;
+		/* padding: 12px; */
 		box-sizing: border-box;
-		color: var(--text);
+		/* color: var(--text); */
 		background-color: var(--bg-elevation-1);
-		border: var(--border) solid 1px;
-		border-radius: 12px;
+		border: none;
+		/* border-radius: 12px; */
 		font-size: 14px;
-		transition: border-color 0.2s ease;
+		/* transition: border-color 0.2s ease; */
 		outline: none;
 		resize: none;
-		scrollbar-width: thin;
-		scrollbar-color: var(--border) var(--bg-elevation-1);
+		/* scrollbar-width: thin; */
+		/* scrollbar-color: var(--border) var(--bg-elevation-1); */
 	}
 	.active {
-		border-color: var(--placeholder-text);
+		border-color: var(--text-3);
 	}
 
 	textarea::placeholder {
