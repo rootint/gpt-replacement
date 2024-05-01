@@ -170,7 +170,7 @@
 	}
 	button {
 		padding: 11px;
-		background-color: var(--bg-elevation-3);
+		background-color: var(--bg-elevation-4);
 		border-radius: 12px;
 		border: none;
 		margin-left: 12px;
